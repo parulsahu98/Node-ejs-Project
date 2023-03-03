@@ -1,0 +1,54 @@
+<header class="tm-header" id="tm-header">
+    <div class="tm-header-wrapper">
+        <button class="navbar-toggler" type="button" aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="tm-site-header">
+            <div class="mb-3 mx-auto tm-site-logo"></div>
+            <%if(!currentUser){%>            
+              <h1 class="text-center">User Dashboard</h1>
+            <%}else{%>
+                <h1 class="text-center">Welcome <%=currentUser.currentUserEmail%></h1>
+            <%}%>    
+        </div>
+        <nav class="tm-nav" id="tm-nav">            
+            <ul>
+               <%if(!currentUser){%> 
+                <li class="tm-nav-item">
+                 <a href="#" class="tm-nav-link">
+                    Sign in
+                 </a>
+                </li>
+
+                <li class="tm-nav-item">
+                    <a href="#" class="tm-nav-link">
+                       Sign up
+                    </a>
+                </li>
+               <%}else{%>
+                <li class="tm-nav-item">
+                    <a href="/cart/cart-item" class="tm-nav-link">
+                       View cart
+                    </a>
+                </li>
+                  <%categoryList.forEach(category=>{%>
+                    <li class="tm-nav-item">
+                        <a href="/product/<%=category._id%>" class="tm-nav-link">
+                           <%=category.categoryName%>
+                        </a>
+                      </li>
+                  <%})%>
+                  <li class="tm-nav-item">
+                   <form action="/user/signout" method="post"> 
+                    <a class="tm-nav-link">
+                       <button class="btn tm-nav-link " type="submit">Sign out</button>
+                    </a>
+                   </form>
+                  </li>
+
+               <%}%> 
+            </ul>
+        </nav>
+        
+    </div>
+</header>

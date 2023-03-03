@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Admin Dashboard</title>
+    <%- include('_bootstrap.ejs')%>
+</head>
+<body>
+	<%- include('_header.ejs')%>
+    <div class="container-fluid">
+        <main class="tm-main">
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th>S.no</th>
+                    <th>Image</th>
+                    <th>Category</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                  </tr>  
+                </thead>
+                <tbody>
+                    <%
+                      productList.forEach((product,index)=>{
+                        %>
+                         <tr>
+                            <td><%=index+1%></td>
+                            <td>
+                                <img src="/images/<%=product.productImage%>" style="width: 100px; height: 100px; border-radius: 50%;"/>
+                            </td>
+                            <td><%=product.categoryId.categoryName%></td>
+                            <td><%=product.productName%></td>
+                            <td><%=product.productPrice%></td>
+                            <td><%=product.productQty%></td>
+                            <td>
+                               <a href="#"> 
+                                <button class="btn btn-primary">Edit</button>
+                               </a>
+                            </td>
+                            <td>
+                               <a href="#"> 
+                                <button class="btn btn-outline-danger">Delete</button>
+                               </a> 
+                            </td>
+                         </tr>
+                        <%
+                      })
+                    %>
+                </tbody>
+            </table>
+        </main>    
+    </div>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/templatemo-script.js"></script>
+</body>
+</html>

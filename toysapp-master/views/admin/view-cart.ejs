@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>User Dashboard</title>
+    <%- include('_bootstrap.ejs')%>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+	<%- include('_user-header.ejs')%>
+    <div class="container">
+        <main class="tm-main">
+            <table class="table">
+                <thead>
+                  <tr>  
+                    <th>S.no</th>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>QTY</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    <%cartItemList.forEach((item,index)=>{%>
+                     <tr>
+                       <td><%=index+1%></td>
+                       <td>
+                         <img src="/images/<%=item.productImage%>" width="100px" hegith="100px"/>
+                       </td>
+                       <td><%=item.productName%></td>
+                       <td id="price<%=index%>"><%=item.productPrice%></td>
+                       <td>
+                        <button onclick="incrementQuantity('<%=index%>')" class="btn btn-sm btn-success">+</button>
+                        <span id="qty<%=index%>" class="btn">1</span>
+                        <button onclick="decrementQuantity('<%=index%>')" class="btn btn-sm btn-info">-</button>
+                       </td>
+                     </tr>    
+                    <%})%>
+                </tbody>
+            </table> 
+            <div class="row p-3">
+                <div class="col-md-10 bg-danger">
+                    <span class="text-white">Total</span>
+                </div>
+                <div class="col-md-2 bg-primary">
+                    <span id="total" class="text-white"></span>
+                </div>
+            </div>
+            <div class="row text-center">
+               <div class="col-md-12"> 
+                <button data-toggle="modal" data-target="#myModal" class="btn btn-outline-success">Place Order</button>
+               </div>
+            </div>
+           <!-- Modal  -->
+            <div class="modal" id="myModal">
+              <div class="modal-dialog">
+                <div class="modal-content">
+            
+                  <!-- Modal Header -->
+                  <div class="modal-header">
+                    <h4 class="modal-title">Delivery Details</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  </div>
+            
+                  <!-- Modal body -->
+                  <div class="modal-body">
+                     <div class="form-group">
+                         <label>Contact Person Name</label>
+                         <input id="personName" type="text" class="form-control"/>
+                      </div>
+                      <div class="form-group">
+                        <label>Mobile number</label>
+                        <input id="mobileNumber" type="text" class="form-control"/>
+                      </div>
+                      <div class="form-group">
+                        <label>Delivery address</label>
+                        <textarea id="address" class="form-control" rows="3"></textarea>
+                      </div>
+                      
+                  </div>
+            
+                  <!-- Modal footer -->
+                  <div class="modal-footer">
+                    <button onclick="placeOrder()" type="button" class="btn btn-danger" data-dismiss="#myModal">Checkout</button>
+                  </div>
+            
+                </div>
+              </div>
+            </div>
+
+
+        </main>    
+    </div>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/templatemo-script.js"></script>
+    <script>
+        function placeOrder(){
+          var personName = document.getElementById("personName").value;
+          var mobile = document.getElementById("mobileNumber").value;
+          var address = document.getElementById("address").value;
+          var cartItems = localStorage.getItem("cart-item");
+          cartItems = JSON.parse(cartItems);
+          
+          var itemList = cartItems.itemList;
+          var total = document.getElementById("total").innerHTML;
+          var xhttp  =new XMLHttpRequest();
+          xhttp.open("POST","http://localhost:3000/order/save",true);
+          xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+          xhttp.send("contactPersonName="+personName+"&contactNumber="+mobile+"&deliveryAddress="+address+"&total="+total+"&itemList="+JSON.stringify(itemList));
+          xhttp.onreadystatechange = function(){
+            if(xhttp.readyState == 4){
+              alert(JSON.parse(xhttp.responseText).message);
+            }
+          }
+        }
+        function incrementQuantity(index){
+           var cartItem =  localStorage.getItem('cart-item');
+           cartItem = JSON.parse(cartItem);
+           var item = cartItem.itemList[index];
+           item.qty++;
+           var totalPrice = item.productPrice*item.qty;
+           cartItem.itemList[index] = item;
+           document.getElementById("qty"+index).innerHTML = ""+item.qty;
+           document.getElementById("price"+index).innerHTML = ""+(totalPrice);
+           localStorage.setItem("cart-item",JSON.stringify(cartItem));
+           var total = 0;
+           for(var i = 0; i<cartItem.itemList.length; i++){
+            total = total + (cartItem.itemList[i].qty * cartItem.itemList[i].productPrice);
+           }
+           document.getElementById("total").innerHTML = ""+total;
+        }
+        function decrementQuantity(index){
+           var cartItem =  localStorage.getItem('cart-item');
+           cartItem = JSON.parse(cartItem);
+           var item = cartItem.itemList[index];
+           if(item.qty>1){
+             item.qty--;
+             var totalPrice = item.productPrice*item.qty;
+             cartItem.itemList[index] = item;
+             document.getElementById("qty"+index).innerHTML = ""+item.qty;
+             document.getElementById("price"+index).innerHTML = ""+(totalPrice);
+             localStorage.setItem("cart-item",JSON.stringify(cartItem));
+           }
+           var total = 0;
+           for(var i = 0; i<cartItem.itemList.length; i++){
+            total = total + (cartItem.itemList[i].qty * cartItem.itemList[i].productPrice);
+           }
+           document.getElementById("total").innerHTML = ""+total;
+        }
+        function loadData(){
+           var xhttp = new XMLHttpRequest();
+           xhttp.open("GET","/cart/load-data",true);
+           xhttp.send();
+           xhttp.onreadystatechange = function(){
+              if(xhttp.readyState == 4){
+                let data = xhttp.responseText;
+                data = JSON.parse(data);
+                localStorage.setItem("cart-item",JSON.stringify(data));
+                var total = 0;
+                for(index = 0; index<data.itemList.length; index++){
+                  total = total + data.itemList[index].productPrice;
+                  document.getElementById("total").innerHTML = ""+total;
+                }
+              }
+           }  
+        }
+        loadData();
+    </script>
+</body>
+</html>

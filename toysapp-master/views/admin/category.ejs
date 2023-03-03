@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Admin Dashboard</title>
+    <%- include('_bootstrap.ejs')%>
+</head>
+<body>
+    
+	<%- include('_header.ejs')%>
+    <div class="container-fluid">
+        <main class="tm-main">
+            <%if(message){%>
+                <div id="alert-message" class="alert alert-success alert-dismissible">
+                    <button type="button" class="close" onclick="removeAlert()" data-dismiss="alert">&times;</button>
+                    <strong>Success!</strong> <%=message%>
+                </div>
+            <%}%>    
+          <form action="/category/add" method="post">
+            <div class="form-group">
+              <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <input type="text" name="categoryName" class="form-control" placeholder="Category Name"/>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                  <button class="btn btn-outline-success" type="submit">Save</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </main>    
+    </div>
+    <script>
+        function removeAlert(){
+          var alertMessage = document.getElementById('alert-message');
+          alertMessage.remove();
+        }
+    </script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/templatemo-script.js"></script>
+</body>
+</html>
